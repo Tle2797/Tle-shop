@@ -6,6 +6,7 @@ export const authenController = {
     try {
       // ✅ ดึงค่าจาก body
       const { email, password, fullname } = body;
+      console.log("🚀 ~ register: ~ body:", body)
 
       // ตรวจสอบว่ามีผู้ใช้ที่ลงทะเบียนด้วยอีเมลนี้หรือไม่
       const exitedUser = await db.oneOrNone(

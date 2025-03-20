@@ -29,8 +29,16 @@ export const authenRoute = new Elysia({ prefix: "/authen" }).post(
       fullname: t.String(),
     }),
   }
-).post("login", ({ body}) => {
-  return authenController.login(body);
+).post("login", async ({ body,set}) => {
+  const checkLogin = await authenController.login(body);
+  if(checkLogin.error){
+    set.status = 400;
+    return {
+      message: checkLogin.message,
+      error: true,
+    };
+  }
+  return checkLogin;
 },{
   body: t.Object({
     email: t.String(),

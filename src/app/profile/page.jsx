@@ -4,10 +4,14 @@ import React from 'react'
 
 const ProfilePage = () => {
     const {data:session,status} = useSession()
+    console.log("🚀 ~ ProfilePage ~ session:", session)
     if(status === 'loading') return <div>Loading...</div>
     if(status === 'unauthenticated') return <div>คุณยังไม่เข้าสู่ระบบ</div>
   return (
-    <div>เข้าสู่ระบบโดย : {session.user.email} </div>
+    <div>
+      <img className='w-28 h-28 object-contain' src={session.user.image} alt='profile'></img>
+      <p>เข้าสู่ระบบแล้วโดย : {session.user.name}</p>
+    </div>
   )
 }
 

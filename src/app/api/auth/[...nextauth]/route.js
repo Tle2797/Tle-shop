@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import LineProvider from "next-auth/providers/line";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions = {
   providers: [
@@ -21,26 +23,46 @@ export const authOptions = {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(credentials),
-          });
-
-          if (!res.ok) {
-            throw new Error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
-          }
-
-          if(res.error){
-            throw new Error(res.message)
-          }
-
+          });    
+                
           const user = await res.json();
-          return user; // ✅ แก้ไขการ return
+          if (user.error) {
+            throw new Error(user.message);
+          }
+          
+
+          
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.full_name,
+            role: user.role,
+          }; // ✅ แก้ไขการ return
         } catch (error) {
-          console.log("🚀 ~ authorize ~ error:", error);
-          return null;
+          throw new Error(error.message);
         }
       },
     }),
+    LineProvider({
+      clientId: process.env.LINE_CLIENT_ID,
+      clientSecret: process.env.LINE_CLIENT_SECRET
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    })
   ],
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      console.log("🚀 ~ signIn ~ email:", email)
+      console.log("🚀 ~ signIn ~ profile:", profile)
+      console.log("🚀 ~ signIn ~ account:", account)
+      console.log("🚀 ~ signIn ~ user:", user)
+
+      user.role = "customer";
+      
+      return true
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -52,6 +74,7 @@ export const authOptions = {
       if (token) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.type = "tester"
       }
       return session;
     },
