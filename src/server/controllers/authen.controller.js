@@ -13,6 +13,7 @@ export const authenController = {
         "SELECT id FROM public.users WHERE email = $1",
         [email]
       );
+      
 
       if (exitedUser) {
         throw new Error("อีเมลนี้มีผู้ใช้งานแล้ว");

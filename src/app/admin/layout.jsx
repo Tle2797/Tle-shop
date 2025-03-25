@@ -1,0 +1,31 @@
+import AppSidebar from "@/components/admin/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import React from "react";
+
+const adminMenu = [
+  { title: "Dashboard", url: "/admin" },
+  { title: "จัดการสินค้า", url: "/admin/products" },
+  { title: "จัดการลูกค้า", url: "/admin/users" },
+  { title: "จัดการคำสั่งซื้อ", url: "/admin/orders" },
+];
+
+const AdminLayout = ({ children }) => {
+  return (
+    <div className="flex flex-row gap-3">
+      <div>
+        <ul className="flex flex-col gap-3">
+          {adminMenu.map((menu) => (
+            <li className="hover:text-blue-500" key={menu.title}>
+              <a href={menu.url}>{menu.title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex-1">
+      {children}
+      </div> 
+    </div>
+  );
+};
+
+export default AdminLayout;

@@ -14,4 +14,22 @@ export const productController = {
         );
         return result;
     },
+    createProduct: async (body) =>{
+      const {name,description,price,stock,} = body;
+      const isExist = await db.manyOrNone(`
+        SELECT * FROM public.products WHERE name = $1`,[name]);
+        if(isExist.length > 0){
+          throw new Error("สินค้านี้มีอยู่แล้ว");
+        }
+
+      const result = await db.one(`
+        INSERT INTO public.products (name,discription,price,stock_quantity)
+        VALUES ($1,$2,$3,$4) RETURNING *`,[
+          name,
+          description,
+          price,
+          stock
+        ])
+        return result;
+    }
 };

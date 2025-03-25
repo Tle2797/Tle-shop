@@ -29,6 +29,21 @@ export const productsRoute = new Elysia({ prefix: "/products" })
       }
     },
   )
-  .get("search", () => {})
-  .post("createProduct")
+  .get("/search", () => {})
+  .post("/createProduct",async ({body,set})=>{
+    console.log("🚀 ~ .post ~ body:", body)
+    try {
+      const create = await productController.createProduct(body);
+      return {
+        message:"สร้างสินค้าสำเร็จ",
+        product:create
+      }
+    } catch (error) {
+      console.log("🚀 ~ .post ~ error:", error)
+      set.status=400;
+      return {message:error.message || "เกิดข้อผิดพลาดในการสร้างสินค้า"}
+    }
+
+  })
+  .post("/updateProduct", () => {})
   .delete("deleteProduct", () => {});
