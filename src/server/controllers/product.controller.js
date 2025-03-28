@@ -1,4 +1,5 @@
 import { db } from "../db.config";
+import { handleUploadFile } from "../utils/upload-file";
 
 export const productController = {
   getAllProducts: async () => {
@@ -15,7 +16,17 @@ export const productController = {
         return result;
     },
     createProduct: async (body) =>{
-      const {name,description,price,stock,} = body;
+      const {name,description,price,stock,image} = body;
+      let image_url = ''
+
+    try {
+      if(image){
+        image_url = await handleUploadFile(image)
+      }
+    } catch (error) {
+      throw new Error(error.message || 'เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ')
+    }
+
       const isExist = await db.manyOrNone(`
         SELECT * FROM public.products WHERE name = $1`,[name]);
         if(isExist.length > 0){
@@ -23,12 +34,13 @@ export const productController = {
         }
 
       const result = await db.one(`
-        INSERT INTO public.products (name,discription,price,stock_quantity)
-        VALUES ($1,$2,$3,$4) RETURNING *`,[
+        INSERT INTO public.products (name,discription,price,stock_quantity,image_url)
+        VALUES ($1,$2,$3,$4,$5) RETURNING *`,[
           name,
           description,
           price,
-          stock
+          stock,
+          image_url,
         ])
         return result;
     }

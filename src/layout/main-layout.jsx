@@ -21,7 +21,18 @@ import {
 import { ShoppingCart, Search, User, Menu } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 const MainLayout = ({ children }) => {
+  const {data:session} = useSession();
+  const path = usePathname();
+  console.log("🚀 ~ MainLayout ~ path:", path)
+  if(path.startsWith("/admin")){
+    return children
+  }
+  if(session.user.role==="admin"){
+    return children
+  }
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   return (
     <div className="min-h-screen flex flex-col">

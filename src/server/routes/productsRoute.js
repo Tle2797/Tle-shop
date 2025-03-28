@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
 import { productController } from "../controllers/product.controller";
+import { handleMultipleFileUpload } from "../utils/upload-file";
 
 export const productsRoute = new Elysia({ prefix: "/products" })
 
@@ -43,7 +44,18 @@ export const productsRoute = new Elysia({ prefix: "/products" })
       set.status=400;
       return {message:error.message || "เกิดข้อผิดพลาดในการสร้างสินค้า"}
     }
-
+  })
+  .post("/uploadImage",async ({body,set}) => {
+    try {
+      const url = await handleMultipleFileUpload(body.images);
+      return {
+        massage:"อัพโหลดรูปภาพสำเร็จ",
+        url,
+      };
+    } catch (error) {
+      set.status = 400;
+      return {massage:error.massage || "เกิดข้อผิดพลาดในการอัพโหลด"}
+    }
   })
   .post("/updateProduct", () => {})
   .delete("deleteProduct", () => {});
