@@ -21,7 +21,25 @@ const useCartStore = create(
           set({ items: [...items, { ...product, quantity: 1 }] });
         }
       },
-      removeItem : ()=>{}
+      removeItem: (productId) => {
+        set({ items: get().items.filter(item => item.id !== productId) });
+      },
+
+      updateQuantity: (productId, quantity) => {
+        const updatedItems = get().items.map(item =>
+          item.id === productId
+            ? { ...item, quantity: Math.max(0, quantity) }
+            : item
+        );
+        set({ items: updatedItems.filter(item => item.quantity > 0) });
+      },
+
+      getTotalPrice: () => {
+        return get().items.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0
+        );
+      },
     }),
     {
       name: "cart-storage",

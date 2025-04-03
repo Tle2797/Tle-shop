@@ -23,16 +23,21 @@ import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+
 const MainLayout = ({ children }) => {
-  const {data:session} = useSession();
+  const { data: session } = useSession();
   const path = usePathname();
-  console.log("🚀 ~ MainLayout ~ path:", path)
-  if(path.startsWith("/admin")){
-    return children
+  console.log("🚀 ~ MainLayout ~ path:", path);
+
+  // ตรวจสอบ session และ role ก่อนเข้าถึงข้อมูล
+  if (!session || !session.user) {
+    return children; // หรือแสดงหน้าจอล็อกอิน หรือรอโหลด
   }
-  if(session.user.role==="admin"){
-    return children
+
+  if (path.startsWith("/admin") || session.user.role === "admin") {
+    return children; // ถ้า session มี user และเป็น admin หรือ path เริ่มต้นด้วย "/admin" ให้เข้าถึงข้อมูล
   }
+
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   return (
     <div className="min-h-screen flex flex-col">
@@ -50,10 +55,6 @@ const MainLayout = ({ children }) => {
               <SheetContent side="left" className="w-64">
                 <SheetHeader>
                   <SheetTitle>Categories</SheetTitle>
-                  {/* <SheetDescription>
-Make changes to your profile here. Click save when you're
-done.
-</SheetDescription> */}
                 </SheetHeader>
                 <nav className="flex flex-col gap-4">
                   <ul className="space-y-2">
@@ -190,7 +191,7 @@ done.
               </Button>
               <Button variant="ghost" size="icon">
                 <Link href={"/cart"}>
-                <ShoppingCart className="h-5 w-5" />
+                  <ShoppingCart className="h-5 w-5" />
                 </Link>
               </Button>
             </div>
@@ -285,4 +286,5 @@ done.
     </div>
   );
 };
+
 export default MainLayout;
